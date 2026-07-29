@@ -14,6 +14,7 @@ import com.github.guocay.hj212.segment.config.Configurator;
 import com.github.guocay.hj212.segment.config.Configured;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 /**
  * 转换器
  * 将 {@link ProtocolMap} 转为 {@link Data}
+ * <p>支持 HJ/T 212-2005 / HJ 212-2017 / HJ 212-2025</p>
  * @author aCay
  */
 public class DataConverter
@@ -33,9 +35,24 @@ public class DataConverter
 
     private static String SPLIT = "-";
     private static String SB = "SB";
+    /**
+     * 设备运行状态：SByyy-RS / SByyy-RT（HJ 212-2025: yyy取值[0, 999]）
+     */
     private static String REGEX_DEVICE = "SB.*-RS$|SB.*-RT$";
-    private static String REGEX_LIVE_SIDE = ".*-Info$|.*-SN$";
+    /**
+     * 现场端信息：vvvvvv-Info / vvvvvv-SN
+     * <p>HJ 212-2025: vvvvvv为6位编码，第1位为i/d/e/g/p</p>
+     */
+    private static String REGEX_LIVE_SIDE = "^[idegp][0-9a-z]{5}-Info$|^[idegp][0-9a-z]{5}-SN$";
+    /**
+     * 污染因子：任何带'-'分隔符的键
+     */
     private static String REGEX_POLLUTION = ".*-.*";
+    /**
+     * 现场端信息编码模式（HJ 212-2025新增）
+     * <p>匹配 idegp 开头的6位编码，如 i12001, d10101, e10101, g10101, p10101</p>
+     */
+    private static Pattern FIELD_INFO_CODE = Pattern.compile("^[idegp][0-9a-z]{5}$");
 
     private ObjectMapper objectMapper;
 
@@ -51,7 +68,8 @@ public class DataConverter
     }
 
     /**
-     * 根据Key中的分隔符分组
+     * 根据Key中的第一个分隔符分组，分隔符后的所有内容都作为字段键
+     * <p>支持多级嵌套键，如 a21026-i22004-Info=1 → {a21026: {i22004-Info: 1}}</p>
      * @param map Map
      * @param split 分隔符
      * @return 分组Map
@@ -59,9 +77,17 @@ public class DataConverter
     private Map<String,Map<String,String>> groupBySplitKey(Map<String,String> map, String split){
         Map<String,Map<String,String>> result = map.entrySet().stream()
                 .collect(Collectors.groupingBy(
-                        t -> t.getKey().split(split)[0],
+                        t -> {
+                            String key = t.getKey();
+                            int idx = key.indexOf(split);
+                            return idx < 0 ? key : key.substring(0, idx);
+                        },
                         Collectors.toMap(
-                                kv -> kv.getKey().split(split)[1],
+                                kv -> {
+                                    String key = kv.getKey();
+                                    int idx = key.indexOf(split);
+                                    return idx < 0 ? key : key.substring(idx + 1);
+                                },
                                 Map.Entry::getValue
                         )
                 ));
@@ -102,18 +128,37 @@ public class DataConverter
 
     /**
      * 转换 污染因子
+     * <p>支持 HJ 212-2025 新增的现场端信息编码 (xxxxxx-vvvvvv)</p>
      * @param map
      * @return
      */
     private Map<String, Pollution> convertPollution(Map<String,String> map){
-        return groupBySplitKey(map,SPLIT)
-                .entrySet()
-                .stream()
-                .map(kv -> {
-                    Pollution pollution = objectMapper.convertValue(kv.getValue(),Pollution.class);
-                    return new AbstractMap.SimpleEntry<>(kv.getKey(),pollution);
-                })
-                .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
+        Map<String, Map<String, String>> grouped = groupBySplitKey(map, SPLIT);
+        Map<String, Pollution> result = new HashMap<>();
+
+        for (Map.Entry<String, Map<String, String>> entry : grouped.entrySet()) {
+            String code = entry.getKey();
+            Map<String, String> fields = new HashMap<>(entry.getValue());
+            Map<String, String> fieldInfo = new HashMap<>();
+
+            // 提取 HJ 212-2025 污染因子关联的现场端信息 (xxxxxx-vvvvvv)
+            for (String subKey : new ArrayList<>(fields.keySet())) {
+                if (FIELD_INFO_CODE.matcher(subKey).matches()) {
+                    fieldInfo.put(subKey, fields.remove(subKey));
+                }
+            }
+
+            Pollution pollution = objectMapper.convertValue(fields, Pollution.class);
+            if (!fieldInfo.isEmpty()) {
+                // 合并 @JsonAnySetter 自动捕获的多级 fieldInfo（如 i22004-Info）
+                if (pollution.getFieldInfo() != null && !pollution.getFieldInfo().isEmpty()) {
+                    fieldInfo.putAll(pollution.getFieldInfo());
+                }
+                pollution.setFieldInfo(fieldInfo);
+            }
+            result.put(code, pollution);
+        }
+        return result;
     }
 
 
@@ -138,7 +183,7 @@ public class DataConverter
      */
     private Map<String,Object> convertDataLevel(Map<String,String> map){
         Map<String,Object> cp = new HashMap<>();
-        //v2017 entry
+        //设备运行状态 SBxxx-RS/RT
         Map<String,String> d = filter(map,predicateDevice);
         if(!d.isEmpty()){
             Map<String,Device> deviceMap = convertDevice(d);
@@ -146,6 +191,7 @@ public class DataConverter
             d.keySet().forEach(map::remove);
         }
 
+        //现场端信息 vvvvvv-Info/SN（vvvvvv以i开头）
         Map<String,String> ls = filter(map,predicateLiveSide);
         if(!ls.isEmpty()){
             Map<String,LiveSide> liveSideMap = convertLiveSide(ls);
@@ -153,7 +199,7 @@ public class DataConverter
             ls.keySet().forEach(map::remove);
         }
 
-        //v2005 entry
+        //数据区Flag标记
         String flag = map.get(DataElement.Flag.name());
         if(flag != null){
             List<DataFlag> dataFlags = convertDataFlag(flag);
@@ -161,6 +207,7 @@ public class DataConverter
             cp.put(Data.FLAG,dataFlags);
         }
 
+        //污染因子及现场端信息 (xxxxxx-Rtd/x-vvvvvv 等)
         Map<String,String> p = filter(map,predicatePollution);
         if(!p.isEmpty()){
             Map<String,Pollution> pollutionMap = convertPollution(p);
@@ -168,7 +215,7 @@ public class DataConverter
             p.keySet().forEach(map::remove);
         }
 
-        //common entry must keep
+        //保留通用字段
         cp.putAll(map);
         return cp;
     }

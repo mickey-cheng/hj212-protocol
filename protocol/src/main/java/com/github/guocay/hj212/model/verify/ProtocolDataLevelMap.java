@@ -33,9 +33,13 @@ import java.util.Map;
         value = @NumberArray(integer = 4, optional = false))
 @FieldN(field = "PNO", groups = ModeGroup.UseSubPacket.class,
         value = @NumberArray(integer = 4, optional = false))
+@FieldN(field = "RF", groups = { VersionGroup.V2025.class },
+        value = @NumberArray(integer = 1, optional = true))
 @FieldC(field = "CP", groups = { VersionGroup.V2005.class },
         value = @CharArray(len = 960))
 @FieldC(field = "CP", groups = { VersionGroup.V2017.class },
+        value = @CharArray(len = 950))
+@FieldC(field = "CP", groups = { VersionGroup.V2025.class },
         value = @CharArray(len = 950))
 public class ProtocolDataLevelMap
         extends ProtocolMap<String,String> {

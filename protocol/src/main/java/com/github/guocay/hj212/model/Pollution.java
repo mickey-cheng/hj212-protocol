@@ -1,5 +1,7 @@
 package com.github.guocay.hj212.model;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.guocay.hj212.core.validator.field.CharArray;
 import com.github.guocay.hj212.core.validator.field.Date;
@@ -9,19 +11,31 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.Max;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 污染因子
  * @author aCay
  */
+@SuppressWarnings("unused")
 public class Pollution {
 
     /**
      * 污染物采样时间
      */
     @Date(format = "yyyyMMddHHmmssSSS", groups = VersionGroup.V2017.class)
+    @Date(format = "yyyyMMddHHmmss", groups = VersionGroup.V2025.class)
     @JsonProperty("SampleTime")
     private String sampleTime;
+
+    /**
+     * 监测参数完成测量时间（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @Date(format = "yyyyMMddHHmmss", groups = VersionGroup.V2025.class)
+    @JsonProperty("CompleteTime")
+    private String completeTime;
 
     /**
      * 污染物实时采样数据
@@ -30,10 +44,31 @@ public class Pollution {
     private BigDecimal rtd;
 
     /**
+     * 监测参数实时工况采样数据（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("WcRtd")
+    private BigDecimal wcRtd;
+
+    /**
+     * 监测参数实时原始采样数据（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("RawRtd")
+    private BigDecimal rawRtd;
+
+    /**
      * 污染物指定时间内最小值
      */
     @JsonProperty("Min")
     private BigDecimal min;
+
+    /**
+     * 监测参数指定时间段内工况数据最小值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("WcMin")
+    private BigDecimal wcMin;
 
     /**
      * 污染物指定时间内平均值
@@ -42,10 +77,45 @@ public class Pollution {
     private BigDecimal avg;
 
     /**
+     * 监测参数指定时间段内工况数据平均值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("WcAvg")
+    private BigDecimal wcAvg;
+
+    /**
      * 污染物指定时间内最大值
      */
     @JsonProperty("Max")
     private BigDecimal max;
+
+    /**
+     * 监测参数指定时间段内工况数据最大值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("WcMax")
+    private BigDecimal wcMax;
+
+    /**
+     * 监测参数指定时间段内原始数据最小值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("RawMin")
+    private BigDecimal rawMin;
+
+    /**
+     * 监测参数指定时间段内原始数据平均值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("RawAvg")
+    private BigDecimal rawAvg;
+
+    /**
+     * 监测参数指定时间段内原始数据最大值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("RawMax")
+    private BigDecimal rawMax;
 
     /**
      * 污染物实时采样折算数据
@@ -73,8 +143,10 @@ public class Pollution {
 
     /**
      * 监测污染物实时数据标记
+     * <p>HJ 212-2025: 长度由C1扩展为C3</p>
      */
     @CharArray(len = 1, groups = VersionGroup.V2017.class)
+    @CharArray(len = 3, groups = VersionGroup.V2025.class)
     @JsonProperty("Flag")
     private String flag;
 
@@ -82,6 +154,7 @@ public class Pollution {
      * 监测仪器扩充数据标记
      */
     @CharArray(len = 4, groups = VersionGroup.V2017.class)
+    @CharArray(len = 4, groups = VersionGroup.V2025.class)
     @JsonProperty("EFlag")
     private String eFlag;
 
@@ -90,6 +163,45 @@ public class Pollution {
      */
     @JsonProperty("Cou")
     private BigDecimal cou;
+
+    /**
+     * 标准样品标称值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("StandardValue")
+    private BigDecimal standardValue;
+
+    /**
+     * 标准样品实际测量示值（HJ 212-2025 新增）
+     * @since 2025
+     */
+    @JsonProperty("SampleRd")
+    private BigDecimal sampleRd;
+
+    /**
+     * 自动标样核查（校准）结果类型（HJ 212-2025 新增）
+     * <p>1表示通过，0表示未通过</p>
+     * @since 2025
+     */
+    @Max(value = 1, groups = VersionGroup.V2025.class)
+    @JsonProperty("ResultType")
+    private Integer resultType;
+
+    /**
+     * 自动监测设备唯一标识（HJ 212-2025 新增）
+     * <p>从LiveSide移至Pollution层级</p>
+     * @since 2025
+     */
+    @CharArray(len = 24, groups = VersionGroup.V2025.class)
+    @JsonProperty("SN")
+    private String sn;
+
+    /**
+     * 监测参数的现场端信息（HJ 212-2025 新增）
+     * <p>存储 xxxxxx-vvvvvv 格式的现场端信息，如 w01001-i12001=1</p>
+     * @since 2025
+     */
+    private Map<String, String> fieldInfo = new LinkedHashMap<>();
 
     /**
      * 设备运行状态的实时采样值
@@ -150,163 +262,112 @@ public class Pollution {
     @JsonProperty("NightData")
     private String nightData;
 
-    public String getSampleTime() {
-        return sampleTime;
-    }
+    // ===== getter/setter =====
 
-    public void setSampleTime(String sampleTime) {
-        this.sampleTime = sampleTime;
-    }
+    public String getSampleTime() { return sampleTime; }
+    public void setSampleTime(String sampleTime) { this.sampleTime = sampleTime; }
 
-    public BigDecimal getRtd() {
-        return rtd;
-    }
+    public String getCompleteTime() { return completeTime; }
+    public void setCompleteTime(String completeTime) { this.completeTime = completeTime; }
 
-    public void setRtd(BigDecimal rtd) {
-        this.rtd = rtd;
-    }
+    public BigDecimal getRtd() { return rtd; }
+    public void setRtd(BigDecimal rtd) { this.rtd = rtd; }
 
-    public BigDecimal getMin() {
-        return min;
-    }
+    public BigDecimal getWcRtd() { return wcRtd; }
+    public void setWcRtd(BigDecimal wcRtd) { this.wcRtd = wcRtd; }
 
-    public void setMin(BigDecimal min) {
-        this.min = min;
-    }
+    public BigDecimal getRawRtd() { return rawRtd; }
+    public void setRawRtd(BigDecimal rawRtd) { this.rawRtd = rawRtd; }
 
-    public BigDecimal getAvg() {
-        return avg;
-    }
+    public BigDecimal getMin() { return min; }
+    public void setMin(BigDecimal min) { this.min = min; }
 
-    public void setAvg(BigDecimal avg) {
-        this.avg = avg;
-    }
+    public BigDecimal getWcMin() { return wcMin; }
+    public void setWcMin(BigDecimal wcMin) { this.wcMin = wcMin; }
 
-    public BigDecimal getMax() {
-        return max;
-    }
+    public BigDecimal getAvg() { return avg; }
+    public void setAvg(BigDecimal avg) { this.avg = avg; }
 
-    public void setMax(BigDecimal max) {
-        this.max = max;
-    }
+    public BigDecimal getWcAvg() { return wcAvg; }
+    public void setWcAvg(BigDecimal wcAvg) { this.wcAvg = wcAvg; }
 
-    public BigDecimal getZsRtd() {
-        return zsRtd;
-    }
+    public BigDecimal getMax() { return max; }
+    public void setMax(BigDecimal max) { this.max = max; }
 
-    public void setZsRtd(BigDecimal zsRtd) {
-        this.zsRtd = zsRtd;
-    }
+    public BigDecimal getWcMax() { return wcMax; }
+    public void setWcMax(BigDecimal wcMax) { this.wcMax = wcMax; }
 
-    public BigDecimal getZsMin() {
-        return zsMin;
-    }
+    public BigDecimal getRawMin() { return rawMin; }
+    public void setRawMin(BigDecimal rawMin) { this.rawMin = rawMin; }
 
-    public void setZsMin(BigDecimal zsMin) {
-        this.zsMin = zsMin;
-    }
+    public BigDecimal getRawAvg() { return rawAvg; }
+    public void setRawAvg(BigDecimal rawAvg) { this.rawAvg = rawAvg; }
 
-    public BigDecimal getZsAvg() {
-        return zsAvg;
-    }
+    public BigDecimal getRawMax() { return rawMax; }
+    public void setRawMax(BigDecimal rawMax) { this.rawMax = rawMax; }
 
-    public void setZsAvg(BigDecimal zsAvg) {
-        this.zsAvg = zsAvg;
-    }
+    public BigDecimal getZsRtd() { return zsRtd; }
+    public void setZsRtd(BigDecimal zsRtd) { this.zsRtd = zsRtd; }
 
-    public BigDecimal getZsMax() {
-        return zsMax;
-    }
+    public BigDecimal getZsMin() { return zsMin; }
+    public void setZsMin(BigDecimal zsMin) { this.zsMin = zsMin; }
 
-    public void setZsMax(BigDecimal zsMax) {
-        this.zsMax = zsMax;
-    }
+    public BigDecimal getZsAvg() { return zsAvg; }
+    public void setZsAvg(BigDecimal zsAvg) { this.zsAvg = zsAvg; }
 
-    public String getFlag() {
-        return flag;
-    }
+    public BigDecimal getZsMax() { return zsMax; }
+    public void setZsMax(BigDecimal zsMax) { this.zsMax = zsMax; }
 
-    public void setFlag(String flag) {
-        this.flag = flag;
-    }
+    public String getFlag() { return flag; }
+    public void setFlag(String flag) { this.flag = flag; }
 
-    public String geteFlag() {
-        return eFlag;
-    }
+    public String geteFlag() { return eFlag; }
+    public void seteFlag(String eFlag) { this.eFlag = eFlag; }
 
-    public void seteFlag(String eFlag) {
-        this.eFlag = eFlag;
-    }
+    public BigDecimal getCou() { return cou; }
+    public void setCou(BigDecimal cou) { this.cou = cou; }
 
-    public BigDecimal getCou() {
-        return cou;
-    }
+    public BigDecimal getStandardValue() { return standardValue; }
+    public void setStandardValue(BigDecimal standardValue) { this.standardValue = standardValue; }
 
-    public void setCou(BigDecimal cou) {
-        this.cou = cou;
-    }
+    public BigDecimal getSampleRd() { return sampleRd; }
+    public void setSampleRd(BigDecimal sampleRd) { this.sampleRd = sampleRd; }
 
-    public Integer getRs() {
-        return rs;
-    }
+    public Integer getResultType() { return resultType; }
+    public void setResultType(Integer resultType) { this.resultType = resultType; }
 
-    public void setRs(Integer rs) {
-        this.rs = rs;
-    }
+    public String getSn() { return sn; }
+    public void setSn(String sn) { this.sn = sn; }
 
-    public BigDecimal getRt() {
-        return rt;
-    }
+    @JsonAnyGetter
+    public Map<String, String> getFieldInfo() { return fieldInfo; }
 
-    public void setRt(BigDecimal rt) {
-        this.rt = rt;
-    }
+    @JsonAnySetter
+    public void setFieldInfo(String key, String value) { this.fieldInfo.put(key, value); }
 
-    public BigDecimal getAla() {
-        return ala;
-    }
+    public void setFieldInfo(Map<String, String> fieldInfo) { this.fieldInfo = fieldInfo; }
 
-    public void setAla(BigDecimal ala) {
-        this.ala = ala;
-    }
+    public Integer getRs() { return rs; }
+    public void setRs(Integer rs) { this.rs = rs; }
 
-    public BigDecimal getUpValue() {
-        return upValue;
-    }
+    public BigDecimal getRt() { return rt; }
+    public void setRt(BigDecimal rt) { this.rt = rt; }
 
-    public void setUpValue(BigDecimal upValue) {
-        this.upValue = upValue;
-    }
+    public BigDecimal getAla() { return ala; }
+    public void setAla(BigDecimal ala) { this.ala = ala; }
 
-    public BigDecimal getLowValue() {
-        return lowValue;
-    }
+    public BigDecimal getUpValue() { return upValue; }
+    public void setUpValue(BigDecimal upValue) { this.upValue = upValue; }
 
-    public void setLowValue(BigDecimal lowValue) {
-        this.lowValue = lowValue;
-    }
+    public BigDecimal getLowValue() { return lowValue; }
+    public void setLowValue(BigDecimal lowValue) { this.lowValue = lowValue; }
 
-    public String getData() {
-        return data;
-    }
+    public String getData() { return data; }
+    public void setData(String data) { this.data = data; }
 
-    public void setData(String data) {
-        this.data = data;
-    }
+    public String getDayData() { return dayData; }
+    public void setDayData(String dayData) { this.dayData = dayData; }
 
-    public String getDayData() {
-        return dayData;
-    }
-
-    public void setDayData(String dayData) {
-        this.dayData = dayData;
-    }
-
-    public String getNightData() {
-        return nightData;
-    }
-
-    public void setNightData(String nightData) {
-        this.nightData = nightData;
-    }
+    public String getNightData() { return nightData; }
+    public void setNightData(String nightData) { this.nightData = nightData; }
 }

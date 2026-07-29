@@ -108,6 +108,42 @@ public class CpData {
     @JsonProperty("NewPW")
     private String newPW;
 
+    /**
+     * 密钥创建时间（HJ 212-2025 新增）
+     * <p>格式 yyyyMMddHHmmsszzz</p>
+     * @since 2025
+     */
+    @Date(format = "yyyyMMddHHmmssSSS", groups = VersionGroup.V2025.class)
+    @JsonProperty("SKCreateTime")
+    private String skCreateTime;
+
+    /**
+     * 新密钥（HJ 212-2025 新增）
+     * <p>数据加密传输时使用的新密钥，16位十六进制字符</p>
+     * @since 2025
+     */
+    @CharArray(len = 16, groups = VersionGroup.V2025.class)
+    @JsonProperty("NewSK")
+    private String newSK;
+
+    /**
+     * 校准类型编码（HJ 212-2025 新增）
+     * <p>0：零点校准与调整；1：量程校准与调整</p>
+     * @since 2025
+     */
+    @Max(value = 1, groups = VersionGroup.V2025.class)
+    @JsonProperty("CalibrationType")
+    private Integer calibrationType;
+
+    /**
+     * 水质自动采样器采样模式（HJ 212-2025 新增）
+     * <p>0：采集瞬时水样；1：时间等比例；2：流量等比例；3：流量触发；4：远程控制</p>
+     * @since 2025
+     */
+    @Max(value = 4, groups = VersionGroup.V2025.class)
+    @JsonProperty("SampleType")
+    private Integer sampleType;
+
     @Max(value = 99999, groups = VersionGroup.V2005.class)
     @Max(value = 99, groups = VersionGroup.V2017.class)
     @JsonProperty("OverTime")
@@ -412,6 +448,38 @@ public class CpData {
 
     public void setDevice(Map<String,Device> device) {
         this.device = device;
+    }
+
+    public String getSkCreateTime() {
+        return skCreateTime;
+    }
+
+    public void setSkCreateTime(String skCreateTime) {
+        this.skCreateTime = skCreateTime;
+    }
+
+    public String getNewSK() {
+        return newSK;
+    }
+
+    public void setNewSK(String newSK) {
+        this.newSK = newSK;
+    }
+
+    public Integer getCalibrationType() {
+        return calibrationType;
+    }
+
+    public void setCalibrationType(Integer calibrationType) {
+        this.calibrationType = calibrationType;
+    }
+
+    public Integer getSampleType() {
+        return sampleType;
+    }
+
+    public void setSampleType(Integer sampleType) {
+        this.sampleType = sampleType;
     }
 
     public Map<String,LiveSide> getLiveSide() {

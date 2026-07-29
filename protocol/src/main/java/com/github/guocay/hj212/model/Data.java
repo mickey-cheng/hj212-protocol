@@ -45,6 +45,15 @@ public class Data {
     private Integer pNo;
 
     /**
+     * 补传标志（HJ 212-2025 新增）
+     * <p>RF=1，标志数据报文属于补传报文；非补传时，无本字段</p>
+     * @since 2025
+     */
+    @Max(value = 1, groups = VersionGroup.V2025.class)
+    @JsonProperty("RF")
+    private Integer rf;
+
+    /**
      * 系统编号
      */
     @CharArray(len = 2)
@@ -110,6 +119,15 @@ public class Data {
 
 	public Data setpNo(Integer pNo) {
 		this.pNo = pNo;
+		return this;
+	}
+
+	public Integer getRf() {
+		return rf;
+	}
+
+	public Data setRf(Integer rf) {
+		this.rf = rf;
 		return this;
 	}
 

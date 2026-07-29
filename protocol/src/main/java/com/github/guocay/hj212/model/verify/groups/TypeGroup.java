@@ -13,9 +13,12 @@ public interface TypeGroup {
     interface N2_2{}
     interface N3_1{}
     interface C1{}
+    interface C3{}
     interface C4{}
     interface C6{}
+    interface C16{}
     interface C24{}
+    interface N6_2{}
 
     /**
      * 对应JAVA的格式为

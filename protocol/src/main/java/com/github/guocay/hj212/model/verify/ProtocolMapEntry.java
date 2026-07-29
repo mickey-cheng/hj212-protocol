@@ -40,6 +40,7 @@ public class ProtocolMapEntry {
     @Max(value = 960, groups = DataElement.Group.CP.class)
 
     @Date(format = "yyyyMMddHHmmss", groups = TypeGroup.YYYYMMDDhhmmss.class)
+    @Date(format = "yyyyMMddHHmmssSSS", groups = TypeGroup.YYYYMMDDhhmmsszzz.class)
     @Date(format = "HHmmss", groups = TypeGroup.hhmmss.class)
     @NumberArray(integer = 1, groups = TypeGroup.N1.class)
     @NumberArray(integer = 2, groups = TypeGroup.N2.class)
@@ -48,9 +49,12 @@ public class ProtocolMapEntry {
     @NumberArray(integer = 14, groups = TypeGroup.N14.class)
     @NumberArray(integer = 2, fraction = 2, groups = TypeGroup.N2_2.class)
     @NumberArray(integer = 3, fraction = 1, groups = TypeGroup.N3_1.class)
+    @NumberArray(integer = 6, fraction = 2, groups = TypeGroup.N6_2.class)
     @CharArray(len = 1, groups = TypeGroup.C1.class)
+    @CharArray(len = 3, groups = TypeGroup.C3.class)
     @CharArray(len = 4, groups = TypeGroup.C4.class)
     @CharArray(len = 6, groups = TypeGroup.C6.class)
+    @CharArray(len = 16, groups = TypeGroup.C16.class)
     @CharArray(len = 24, groups = TypeGroup.C24.class)
 
     private String value;

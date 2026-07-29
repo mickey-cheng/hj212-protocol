@@ -16,6 +16,7 @@ public enum DataElement {
     PW(Group.PW.class),
     MN(Group.MN.class),
     Flag(Group.Flag.class),
+    RF(Group.RF.class,false),
     CP(Group.CP.class);
 
 	private Class group;
@@ -49,6 +50,7 @@ public enum DataElement {
         interface PW{}
         interface MN{}
         interface Flag{}
+        interface RF{}
         interface CP{}
     }
 

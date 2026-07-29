@@ -33,4 +33,22 @@
         </dependency>
     </dependencies>
 
+    <developers>
+        <developer>
+            <name>GuoCay (aCay)</name>
+            <url>https://github.com/guocay</url>
+            <roles>
+                <role>creator</role>
+            </roles>
+            <organization>HJ/T 212-2005 / HJ 212-2017</organization>
+        </developer>
+        <developer>
+            <name>Charles Cheng</name>
+            <roles>
+                <role>contributor</role>
+            </roles>
+            <organization>HJ 212-2025 adaptation</organization>
+        </developer>
+    </developers>
+
 </project>

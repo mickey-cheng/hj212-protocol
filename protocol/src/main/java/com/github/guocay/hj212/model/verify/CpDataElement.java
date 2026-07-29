@@ -14,10 +14,19 @@ public enum CpDataElement {
     MinInterval(TypeGroup.N2.class),
     RestartTime(TypeGroup.YYYYMMDDhhmmss.class),
     xxxxxx_SampleTime(TypeGroup.YYYYMMDDhhmmss.class),
+    xxxxxx_CompleteTime(TypeGroup.YYYYMMDDhhmmss.class),
     xxxxxx_Rtd,
+    xxxxxx_WcRtd,
+    xxxxxx_RawRtd,
     xxxxxx_Min,
+    xxxxxx_WcMin,
     xxxxxx_Avg,
+    xxxxxx_WcAvg,
     xxxxxx_Max,
+    xxxxxx_WcMax,
+    xxxxxx_RawMin,
+    xxxxxx_RawAvg,
+    xxxxxx_RawMax,
     xxxxxx_ZsRtd,
     xxxxxx_ZsMin,
     xxxxxx_ZsAvg,
@@ -25,6 +34,9 @@ public enum CpDataElement {
     xxxxxx_Flag(TypeGroup.C1.class),
     xxxxxx_EFlag(TypeGroup.C4.class),
     xxxxxx_Cou,
+    xxxxxx_StandardValue(TypeGroup.N6_2.class),
+    xxxxxx_SampleRd(TypeGroup.N6_2.class),
+    xxxxxx_ResultType(TypeGroup.N1.class),
     SBxxx_RS(TypeGroup.N1.class),
     SBxxx_RT(TypeGroup.N2_2.class),
     xxxxxx_Data(TypeGroup.N3_1.class),
@@ -44,7 +56,11 @@ public enum CpDataElement {
     Stime(Group.Stime.class),
     xxxxxx_Info,
     InfoId(TypeGroup.C6.class),
-    xxxxxx_SN(TypeGroup.C24.class);
+    xxxxxx_SN(TypeGroup.C24.class),
+    CalibrationType(TypeGroup.N1.class),
+    SampleType(TypeGroup.N1.class),
+    SKCreateTime(TypeGroup.YYYYMMDDhhmmsszzz.class),
+    NewSK(TypeGroup.C16.class);
 
     @SuppressWarnings("rawtypes")
 	private Class group;
@@ -99,6 +115,10 @@ public enum CpDataElement {
         interface xxxxxx_Info{}
         interface InfoId{}
         interface xxxxxx_SN{}
+        interface CalibrationType{}
+        interface SampleType{}
+        interface SKCreateTime{}
+        interface NewSK{}
     }
 
 }

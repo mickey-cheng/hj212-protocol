@@ -61,19 +61,45 @@ public class ProtocolCpDataLevelMap
             value = @NumberArray(integer = 4))
     @FieldN(field = "RtdInterval", groups = VersionGroup.V2017.class,
             value = @NumberArray(integer = 4, min = 30, max = 3600))
+    @FieldN(field = "RtdInterval", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 4, min = 1, max = 3600))
 
     @FieldValidDate(field = "QN", groups = VersionGroup.V2005.class,
             value = @Date(format = "yyyyMMddHHmmssSSS"))
 
     @FieldN(field = "MinInterval", groups = VersionGroup.V2017.class,
             value = @NumberArray(integer = 2))
+    @FieldN(field = "MinInterval", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 2))
     @FieldValidDate(field = "RestartTime", groups = VersionGroup.V2017.class,
+            value = @Date(format = "yyyyMMddHHmmss"))
+    @FieldValidDate(field = "RestartTime", groups = VersionGroup.V2025.class,
             value = @Date(format = "yyyyMMddHHmmss"))
 
 
     //污染物
     @FieldC(field = ".*-Flag", regex = true,
             value = @CharArray(len = 1))
+    @FieldC(field = ".*-Flag", regex = true, groups = VersionGroup.V2025.class,
+            value = @CharArray(len = 3))
+
+    //HJ 212-2025 新增污染物子字段验证
+    @FieldValidDate(field = ".*-CompleteTime", regex = true, groups = VersionGroup.V2025.class,
+            value = @Date(format = "yyyyMMddHHmmss"))
+    @FieldN(field = ".*-WcRtd", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-RawRtd", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-WcMin", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-WcAvg", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-WcMax", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-RawMin", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-RawAvg", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-RawMax", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-StandardValue", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 6, fraction = 2))
+    @FieldN(field = ".*-SampleRd", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 6, fraction = 2))
+    @FieldN(field = ".*-ResultType", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 1, max = 1))
 
     @FieldN(field = ".*-Rtd", regex = true, groups = VersionGroup.V2005.class,
             value = @NumberArray(integer = 14, fraction = 2))
@@ -113,6 +139,10 @@ public class ProtocolCpDataLevelMap
     @FieldN(field = "SB.*-RS", regex = true, groups = VersionGroup.V2017.class,
             value = @NumberArray(integer = 1))
     @FieldN(field = "SB.*-RT", regex = true, groups = VersionGroup.V2017.class,
+            value = @NumberArray(integer = 2, fraction = 2, min = 0, max = 24))
+    @FieldN(field = "SB.*-RS", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 1, min = 0, max = 1))
+    @FieldN(field = "SB.*-RT", regex = true, groups = VersionGroup.V2025.class,
             value = @NumberArray(integer = 2, fraction = 2, min = 0, max = 24))
 
 
@@ -186,6 +216,28 @@ public class ProtocolCpDataLevelMap
             value = @CharArray(len = 6))
     @FieldC(field = ".*-SN", regex = true, groups = VersionGroup.V2017.class,
             value = @CharArray(len = 24))
+    @FieldC(field = ".*-SN", regex = true, groups = VersionGroup.V2025.class,
+            value = @CharArray(len = 24))
+    @FieldN(field = "OverTime", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 2))
+    @FieldN(field = "CTime", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 2, max = 24))
+    @FieldN(field = "VaseNo", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 2))
+    @FieldValidDate(field = "CstartTime", groups = VersionGroup.V2025.class,
+            value = @Date(format = "HHmmss"))
+    @FieldN(field = "Stime", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 4, min = 0, max = 120))
+    @FieldC(field = "NewPW", groups = VersionGroup.V2025.class,
+            value = @CharArray(len = 6))
+    @FieldC(field = "NewSK", groups = VersionGroup.V2025.class,
+            value = @CharArray(len = 16))
+    @FieldN(field = "CalibrationType", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 1, min = 0, max = 1))
+    @FieldN(field = "SampleType", groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = 1, min = 0, max = 4))
+    @FieldValidDate(field = "SKCreateTime", groups = VersionGroup.V2025.class,
+            value = @Date(format = "yyyyMMddHHmmssSSS"))
     public class Cp
             extends ProtocolMap<String, String> {
 

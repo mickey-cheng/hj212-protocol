@@ -18,4 +18,10 @@ public interface VersionGroup {
      * 2017版
      */
     interface V2017{}
+
+    /**
+     * 2025版 (HJ 212-2025)
+     * <p>V5~V0=000010 表示本次修订版本号</p>
+     */
+    interface V2025{}
 }

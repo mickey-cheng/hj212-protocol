@@ -35,6 +35,14 @@ public class ProtocolMap<K,V>
         return new ProtocolMapV2017<>(map);
     }
 
+    /**
+     * Create HJ 212-2025 version protocol map
+     * @since 2025
+     */
+    public static <K,V> ProtocolMap<K,V> create2025(Map<K,V> map) {
+        return new ProtocolMapV2025<>(map);
+    }
+
     public static ProtocolDataLevelMap createDataLevel(Map<String,String> map) {
         return new ProtocolDataLevelMap(map);
     }

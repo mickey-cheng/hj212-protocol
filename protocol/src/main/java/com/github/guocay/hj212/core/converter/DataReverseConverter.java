@@ -74,6 +74,7 @@ public class DataReverseConverter
 
     /**
      * 转换 污染因子
+     * <p>支持 HJ 212-2025 的 fieldInfo 和 SN 字段</p>
      * @param map
      * @return
      */
@@ -83,7 +84,9 @@ public class DataReverseConverter
         }
         return map.entrySet().stream()
                 .map(kv -> {
-                    Map<String,String> value = objectMapper.convertValue(kv.getValue(),Map.class);
+                    Pollution pollution = kv.getValue();
+                    // fieldInfo通过@JsonAnyGetter自动展平到Map中，无需单独处理
+                    Map<String,String> value = objectMapper.convertValue(pollution,Map.class);
                     return new AbstractMap.SimpleEntry<>(kv.getKey(),value);
                 })
                 .collect(Collectors.toMap(
