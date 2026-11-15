@@ -69,7 +69,7 @@ public class DataDeserializer
 
         if(DATA_CRC.enabledIn(verifyFeature)){
             if(crc == -1 ||
-                    crc16Checkout(data,len) != crc){
+                    crc16Checkout(data,data.length) != crc){
                 ProtocolFormatException.crc_verification_failed(PacketElement.DATA,data,crc);
             }
         }
@@ -78,6 +78,8 @@ public class DataDeserializer
     }
 
     public Data deserialize(char[] data) throws IOException, ProtocolFormatException {
+        if (com.github.guocay.hj212.core.feature.VerifyFeature.STRICT_2025.enabledIn(verifyFeature))
+            com.github.guocay.hj212.core.validator.Protocol2025Validator.validate(data);
         PushbackReader reader = new PushbackReader(new CharArrayReader(data));
         SegmentParser parser = new SegmentParser(reader);
         parser.configured(segmentParserConfigurator);
@@ -105,11 +107,7 @@ public class DataDeserializer
 	private void verify(Data result) throws ProtocolFormatException {
         List<Class> groups = new ArrayList<>();
         groups.add(Default.class);
-        if(DataFlag.V0.isMarked(result.getDataFlag())){
-            groups.add(VersionGroup.V2017.class);
-        }else{
-            groups.add(VersionGroup.V2005.class);
-        }
+        groups.add(DataFlag.versionGroup(result.getDataFlag()));
         if(DataFlag.D.isMarked(result.getDataFlag())){
             groups.add(ModeGroup.UseSubPacket.class);
         }

@@ -43,6 +43,22 @@ public enum DataFlag {
      */
     V5(128);
 
+    /** 按完整版本位识别，避免将 2025 版误判为 2005 版。 */
+    public static Class<?> versionGroup(int flag) {
+        switch ((flag & 0xFC) >>> 2) {
+            case 0: return com.github.guocay.hj212.model.verify.groups.VersionGroup.V2005.class;
+            case 1: return com.github.guocay.hj212.model.verify.groups.VersionGroup.V2017.class;
+            case 2: return com.github.guocay.hj212.model.verify.groups.VersionGroup.V2025.class;
+            default: throw new IllegalArgumentException("不支持的协议版本: " + flag);
+        }
+    }
+
+    public static Class<?> versionGroup(Collection<DataFlag> flags) {
+        int flag = 0;
+        if (flags != null) for (DataFlag value : flags) flag |= value.bit;
+        return versionGroup(flag);
+    }
+
     private int bit;
 
     DataFlag(){

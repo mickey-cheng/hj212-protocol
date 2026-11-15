@@ -45,7 +45,10 @@ public enum VerifyFeature implements Feature {
      * 严格模式
      */
     @Deprecated
-    STRICT(false);
+    STRICT(false),
+
+    /** 显式启用 2025 版报文结构、已知字段及明确命令参数的严格校验。 */
+    STRICT_2025(false);
 
 
     private final boolean _defaultState;

@@ -27,9 +27,9 @@ public abstract class FieldValidator<A extends Annotation,V,AF extends Annotatio
 
     protected String field;
     private AF af;
-    private ConstraintValidator<AF,FV> constraintValidator;
+    private ConstraintValidator<AF,? super FV> constraintValidator;
 
-    public FieldValidator(ConstraintValidator<AF,FV> constraintValidator){
+    public FieldValidator(ConstraintValidator<AF,? super FV> constraintValidator){
         this.constraintValidator = constraintValidator;
     }
 

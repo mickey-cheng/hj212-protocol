@@ -46,11 +46,7 @@ public class NettyServer implements DisposableBean {
                             // 先按回车换行符拆帧，解决TCP粘包/拆包问题
                             // HJ212通信包结尾固定为 \r\n，LineBasedFrameDecoder会自动按行分割
                             // maxLength = 2048，覆盖数据段最大1024 + 包头/长度/CRC/包尾等额外字符
-                            socketChannel.pipeline().addLast(new LineBasedFrameDecoder(2048));
-                            socketChannel.pipeline().addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
-                            socketChannel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
-//                            为监听客户端read/write事件的Channel添加用户自定义的ChannelHandler
-                            socketChannel.pipeline().addLast(serverHandler);
+                            configurePipeline(socketChannel.pipeline(), serverHandler);
                         }
                     });
 
@@ -58,7 +54,7 @@ public class NettyServer implements DisposableBean {
             channel = f.channel();
             log.info("Netty TcpServer Start Success...");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
         } finally {
             if (f != null && f.isSuccess()) {
                 log.info("Netty server listening " + hostname + " on port " + port + " and ready for connections...");
@@ -67,6 +63,13 @@ public class NettyServer implements DisposableBean {
             }
         }
         return f;
+    }
+
+    static void configurePipeline(io.netty.channel.ChannelPipeline pipeline, NettyServerHandler handler) {
+        pipeline.addLast(new LineBasedFrameDecoder(2048, false, true));
+        pipeline.addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
+        pipeline.addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
+        pipeline.addLast(handler);
     }
 
     @Override

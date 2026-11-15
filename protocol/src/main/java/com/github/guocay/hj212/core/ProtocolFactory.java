@@ -22,6 +22,7 @@ import java.io.Writer;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -48,8 +49,14 @@ public class ProtocolFactory {
     public ProtocolFactory copy() {
         ProtocolFactory factory = new ProtocolFactory();
         factory.setConfigurator(this.configurator);
-        factory._rootDeserializers.putAll(this._rootDeserializers);
-        factory._rootSerializers.putAll(this._rootSerializers);
+        try {
+            for (Map.Entry<Type, ProtocolDeserializer<Object>> e : _rootDeserializers.entrySet())
+                factory._rootDeserializers.put(e.getKey(), e.getValue().getClass().newInstance());
+            for (Map.Entry<Type, ProtocolSerializer<Object>> e : _rootSerializers.entrySet())
+                factory._rootSerializers.put(e.getKey(), e.getValue().getClass().newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("无法复制协议编解码器", e);
+        }
         return factory;
     }
 
@@ -69,7 +76,9 @@ public class ProtocolFactory {
      * @return 解析器
      */
     public ProtocolParser parser(InputStream is) {
-        InputStreamReader dis = new InputStreamReader(is);
+        InputStreamReader dis = new InputStreamReader(is, java.nio.charset.StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                .onUnmappableCharacter(java.nio.charset.CodingErrorAction.REPORT));
         ProtocolParser parser = new ProtocolParser(dis);
         parser.configured(configurator);
         return parser;
@@ -173,7 +182,7 @@ public class ProtocolFactory {
      * @return 产生器
      */
     public ProtocolGenerator generator(OutputStream os) {
-        OutputStreamWriter osw = new OutputStreamWriter(os);
+        OutputStreamWriter osw = new OutputStreamWriter(os, java.nio.charset.StandardCharsets.UTF_8);
         ProtocolGenerator generator = new ProtocolGenerator(osw);
         generator.configured(configurator);
         return generator;
@@ -231,9 +240,13 @@ public class ProtocolFactory {
         _rootSerializers.put(type,serializerClass.newInstance());
     }
 
+    private static class ValidatorHolder {
+        private static final ValidatorFactory FACTORY = Validation.buildDefaultValidatorFactory();
+        private static final Validator VALIDATOR = FACTORY.getValidator();
+    }
+
     public Validator validator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        return factory.getValidator();
+        return ValidatorHolder.VALIDATOR;
     }
 
     /**

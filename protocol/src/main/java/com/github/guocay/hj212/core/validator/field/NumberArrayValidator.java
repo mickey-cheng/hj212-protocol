@@ -11,7 +11,7 @@ import java.text.ParseException;
  * 验证 数字集合
  * @author aCay
  */
-public class NumberArrayValidator implements ConstraintValidator<NumberArray, String> {
+public class NumberArrayValidator implements ConstraintValidator<NumberArray, Object> {
 
     private int int_len_max;
     private int fraction_len_max;
@@ -30,23 +30,27 @@ public class NumberArrayValidator implements ConstraintValidator<NumberArray, St
     }
 
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Object value, ConstraintValidatorContext constraintValidatorContext) {
         if(value == null){
             return optional;
         }
 
         try{
-            BigDecimal decimal = new BigDecimal(value);
-            int int_len = getNumLength(decimal.longValue());
+            String text = value instanceof BigDecimal ? ((BigDecimal)value).toPlainString() : value.toString();
+            if (!text.matches("[+-]?[0-9]+(\\.[0-9]+)?")) return false;
+            BigDecimal decimal = new BigDecimal(text);
+            String unsigned = text.replaceFirst("^[+-]", "");
+            int dot = unsigned.indexOf('.');
+            int int_len = dot < 0 ? unsigned.length() : dot;
             int fraction_len = decimal.scale();
             boolean result = int_len <= int_len_max &&
                     fraction_len <= fraction_len_max;
 
-            if(min > 0 &&
+            if(min != -1 &&
                     decimal.doubleValue() < min){
                 return false;
             }
-            if(max > 0 &&
+            if(max != -1 &&
                     decimal.doubleValue() > max){
                 return false;
             }

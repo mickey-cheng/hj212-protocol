@@ -228,6 +228,8 @@ public class DataConverter
     private List<DataFlag> convertDataFlag(String flag){
         if(flag != null){
             int i = Integer.parseInt(flag.trim());
+            if (i < 0 || i > 255) throw new IllegalArgumentException("Flag 应在 0 到 255 之间");
+            DataFlag.versionGroup(i);
 
             return Stream.of(DataFlag.values())
                     .filter(sf -> sf.isMarked(i))

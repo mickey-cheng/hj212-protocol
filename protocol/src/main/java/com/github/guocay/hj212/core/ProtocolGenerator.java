@@ -71,7 +71,7 @@ public class ProtocolGenerator implements Configured<ProtocolGenerator>, Closeab
      * @throws IOException
      */
     public int writeHexInt32(int i) throws IOException {
-        char[] intChars = Integer.toHexString(i).toCharArray();
+        char[] intChars = String.format(java.util.Locale.ROOT, "%04X", i).toCharArray();
         writer.write(intChars);
         return intChars.length;
     }
@@ -111,14 +111,14 @@ public class ProtocolGenerator implements Configured<ProtocolGenerator>, Closeab
      * @throws IOException
      */
     public int writeDataAndLenAndCrc(char[] data) throws IOException, ProtocolFormatException {
-        int dataLen = data.length;
+        int dataLen = new String(data).getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
         char[] len = String.format("%04d", dataLen).toCharArray();
         writer.write(len);
         VerifyUtil.verifyLen(len.length, 4, PacketElement.DATA_CRC);
 
         writer.write(data);
 
-        int crc = ProtocolParser.crc16Checkout(data,dataLen);
+        int crc = ProtocolParser.crc16Checkout(data,data.length);
         int crcLen = writeHexInt32(crc);
         VerifyUtil.verifyLen(crcLen, 4, PacketElement.DATA_CRC);
 

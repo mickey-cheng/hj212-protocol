@@ -1,0 +1,883 @@
+[
+  {
+    "field": "RtdInterval",
+    "scope": "CP",
+    "valid": [
+      "1",
+      "0001",
+      "3600"
+    ],
+    "invalid": [
+      "00001",
+      "0",
+      "3601",
+      "+1"
+    ]
+  },
+  {
+    "field": "MinInterval",
+    "scope": "CP",
+    "valid": [
+      "01",
+      "30"
+    ],
+    "invalid": [
+      "001",
+      "7",
+      "0",
+      "31"
+    ]
+  },
+  {
+    "field": "OverTime",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "00",
+      "99"
+    ],
+    "invalid": [
+      "000",
+      "100",
+      "-1"
+    ]
+  },
+  {
+    "field": "ReCount",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "00",
+      "99"
+    ],
+    "invalid": [
+      "000",
+      "100",
+      "-1"
+    ]
+  },
+  {
+    "field": "VaseNo",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "00",
+      "99"
+    ],
+    "invalid": [
+      "000",
+      "100",
+      "-1"
+    ]
+  },
+  {
+    "field": "Stime",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "0120"
+    ],
+    "invalid": [
+      "00120",
+      "121",
+      "-1"
+    ]
+  },
+  {
+    "field": "CalibrationType",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "1"
+    ],
+    "invalid": [
+      "00",
+      "01",
+      "2"
+    ]
+  },
+  {
+    "field": "w01018-ResultType",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "1"
+    ],
+    "invalid": [
+      "00",
+      "01",
+      "2"
+    ]
+  },
+  {
+    "field": "SampleType",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "4"
+    ],
+    "invalid": [
+      "00",
+      "0004",
+      "5"
+    ]
+  },
+  {
+    "field": "w01018-SampleType",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "4"
+    ],
+    "invalid": [
+      "00",
+      "0004",
+      "5"
+    ]
+  },
+  {
+    "field": "QnRtn",
+    "scope": "CP",
+    "valid": [
+      "001",
+      "9",
+      "100"
+    ],
+    "invalid": [
+      "0001",
+      "0",
+      "10",
+      "101"
+    ]
+  },
+  {
+    "field": "ExeRtn",
+    "scope": "CP",
+    "valid": [
+      "001",
+      "6",
+      "100"
+    ],
+    "invalid": [
+      "0001",
+      "0",
+      "7",
+      "101"
+    ]
+  },
+  {
+    "field": "SB001-RS",
+    "scope": "CP",
+    "valid": [
+      "0",
+      "1"
+    ],
+    "invalid": [
+      "00",
+      "01",
+      "2"
+    ]
+  },
+  {
+    "field": "SB001-RT",
+    "scope": "CP",
+    "valid": [
+      "00.00",
+      "24.00",
+      "1.25"
+    ],
+    "invalid": [
+      "000.00",
+      "24.01",
+      "1.250",
+      "-0.01"
+    ]
+  },
+  {
+    "field": "w01018-StandardValue",
+    "scope": "CP",
+    "valid": [
+      "999999.99",
+      "000000.10",
+      "-1.25"
+    ],
+    "invalid": [
+      "0000000.10",
+      "1.250",
+      "1e2"
+    ]
+  },
+  {
+    "field": "w01018-SampleRd",
+    "scope": "CP",
+    "valid": [
+      "999999.99",
+      "000000.10",
+      "-1.25"
+    ],
+    "invalid": [
+      "0000000.10",
+      "1.250",
+      "1e2"
+    ]
+  },
+  {
+    "field": "L5-Data",
+    "scope": "CP",
+    "valid": [
+      "000.0",
+      "999.9"
+    ],
+    "invalid": [
+      "0000.0",
+      "1.00",
+      "1e2"
+    ]
+  },
+  {
+    "field": "w01018-Flag",
+    "scope": "CP",
+    "valid": [
+      "N",
+      "Td",
+      "Stc"
+    ],
+    "invalid": [
+      "ABCD",
+      "",
+      "N!"
+    ]
+  },
+  {
+    "field": "w01018-EFlag",
+    "scope": "CP",
+    "valid": [
+      "N",
+      "AB12"
+    ],
+    "invalid": [
+      "ABCDE",
+      "N!"
+    ]
+  },
+  {
+    "field": "w01018-SN",
+    "scope": "CP",
+    "valid": [
+      "6970000000001ABCDEFG1234"
+    ],
+    "invalid": [
+      "AAAAAAAAAAAAAAAAAAAAAAAAA",
+      "ABC!"
+    ]
+  },
+  {
+    "field": "NewPW",
+    "scope": "CP",
+    "valid": [
+      "a",
+      "Ab1234"
+    ],
+    "invalid": [
+      "1234567",
+      "abc!"
+    ]
+  },
+  {
+    "field": "NewSK",
+    "scope": "CP",
+    "valid": [
+      "Zz1234567890ABCD"
+    ],
+    "invalid": [
+      "AAAAAAAAAAAAAAAAA",
+      "abc!"
+    ]
+  },
+  {
+    "field": "SystemTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203"
+    ],
+    "invalid": [
+      "20240230010203",
+      "202402290102030",
+      "202402290102"
+    ]
+  },
+  {
+    "field": "RestartTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203"
+    ],
+    "invalid": [
+      "20240230010203",
+      "202402290102030",
+      "202402290102"
+    ]
+  },
+  {
+    "field": "BeginTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203"
+    ],
+    "invalid": [
+      "20240230010203",
+      "202402290102030",
+      "202402290102"
+    ]
+  },
+  {
+    "field": "EndTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203"
+    ],
+    "invalid": [
+      "20240230010203",
+      "202402290102030",
+      "202402290102"
+    ]
+  },
+  {
+    "field": "DataTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203"
+    ],
+    "invalid": [
+      "20240230010203",
+      "202402290102030",
+      "202402290102"
+    ]
+  },
+  {
+    "field": "w01018-SampleTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203"
+    ],
+    "invalid": [
+      "20240230010203",
+      "202402290102030",
+      "202402290102"
+    ]
+  },
+  {
+    "field": "w01018-CompleteTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203"
+    ],
+    "invalid": [
+      "20240230010203",
+      "202402290102030",
+      "202402290102"
+    ]
+  },
+  {
+    "field": "SKCreateTime",
+    "scope": "CP",
+    "valid": [
+      "20240229010203001"
+    ],
+    "invalid": [
+      "20240230010203001",
+      "20240229010203"
+    ]
+  },
+  {
+    "field": "MN",
+    "scope": "header",
+    "valid": [
+      "010000A8900016F000169DC0"
+    ],
+    "invalid": [
+      "ABC",
+      "010000a8900016F000169DC0"
+    ]
+  },
+  {
+    "field": "ST",
+    "scope": "header",
+    "valid": [
+      "32",
+      "A0"
+    ],
+    "invalid": [
+      "00",
+      "a0",
+      "123"
+    ]
+  },
+  {
+    "field": "CN",
+    "scope": "header",
+    "valid": [
+      "2201",
+      "9015",
+      "9999"
+    ],
+    "invalid": [
+      "5000",
+      "22010",
+      "abcd"
+    ]
+  },
+  {
+    "field": "PW",
+    "scope": "header",
+    "valid": [
+      "123456"
+    ],
+    "invalid": [
+      "1234567",
+      "a!"
+    ]
+  },
+  {
+    "field": "Flag",
+    "scope": "header",
+    "valid": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "invalid": [
+      "0008",
+      "12",
+      "-1",
+      "256"
+    ]
+  },
+  {
+    "field": "RF",
+    "scope": "header",
+    "valid": [
+      "1"
+    ],
+    "invalid": [
+      "01",
+      "0",
+      "2"
+    ]
+  },
+  {
+    "field": "PNUM",
+    "scope": "header",
+    "valid": [
+      "2",
+      "0002"
+    ],
+    "invalid": [
+      "00002",
+      "0",
+      "33333"
+    ]
+  },
+  {
+    "field": "PNO",
+    "scope": "header",
+    "valid": [
+      "2",
+      "0002"
+    ],
+    "invalid": [
+      "00002",
+      "0",
+      "33333"
+    ]
+  },
+  {
+    "field": "w01018-Rtd",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-WcRtd",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-RawRtd",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-Min",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-WcMin",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-Avg",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-WcAvg",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-Max",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-WcMax",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-RawMin",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-RawAvg",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-RawMax",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-ZsRtd",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-ZsMin",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-ZsAvg",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-ZsMax",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "w01018-Cou",
+    "scope": "CP",
+    "valid": [
+      "-0.001",
+      "123456789012345678901.1234567"
+    ],
+    "invalid": [
+      "1e2",
+      "NaN",
+      "abc"
+    ]
+  },
+  {
+    "field": "QN",
+    "scope": "header",
+    "valid": [
+      "20240229010203001"
+    ],
+    "invalid": [
+      "20240230010203001",
+      "20240229010203",
+      "202402290102030001"
+    ]
+  },
+  {
+    "field": "PolId",
+    "scope": "CP",
+    "valid": [
+      "w01018",
+      "1"
+    ],
+    "invalid": [
+      "w010180",
+      "ab!"
+    ]
+  },
+  {
+    "field": "InfoId",
+    "scope": "CP",
+    "valid": [
+      "i11001",
+      "1"
+    ],
+    "invalid": [
+      "i110010",
+      "ab!"
+    ]
+  },
+  {
+    "field": "p10101-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAAAA"
+    ],
+    "invalid": [
+      "AAAAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "p20101-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAAAA"
+    ],
+    "invalid": [
+      "AAAAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "p30101-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAA"
+    ],
+    "invalid": [
+      "AAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "p30201-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAA"
+    ],
+    "invalid": [
+      "AAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "p40101-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAA"
+    ],
+    "invalid": [
+      "AAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "p99101-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAA"
+    ],
+    "invalid": [
+      "AAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "p11101-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAAAA"
+    ],
+    "invalid": [
+      "AAAAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "d10901-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAA"
+    ],
+    "invalid": [
+      "AAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "d20901-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAA"
+    ],
+    "invalid": [
+      "AAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "d30901-Rtd",
+    "scope": "CP",
+    "valid": [
+      "St",
+      "AAAA"
+    ],
+    "invalid": [
+      "AAAAA",
+      "N!"
+    ]
+  },
+  {
+    "field": "i11001-Info",
+    "scope": "CP",
+    "valid": [
+      "//清洗管路//"
+    ],
+    "invalid": [
+      "无引号日志",
+      "//未闭合"
+    ]
+  }
+]

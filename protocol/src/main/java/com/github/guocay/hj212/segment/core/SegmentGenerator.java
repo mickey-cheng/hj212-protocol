@@ -81,6 +81,7 @@ public class SegmentGenerator implements Closeable, Configured<SegmentGenerator>
                             .stream()
                             .collect(Collectors.joining("-")));
                     writer.write(END_PART_KEY.start());
+                    previousKeys.removeLast();
                     break;
                 }
             case END_ENTRY:

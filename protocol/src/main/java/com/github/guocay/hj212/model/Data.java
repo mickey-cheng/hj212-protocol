@@ -49,6 +49,7 @@ public class Data {
      * <p>RF=1，标志数据报文属于补传报文；非补传时，无本字段</p>
      * @since 2025
      */
+    @Min(value = 1, groups = VersionGroup.V2025.class)
     @Max(value = 1, groups = VersionGroup.V2025.class)
     @JsonProperty("RF")
     private Integer rf;
@@ -78,7 +79,7 @@ public class Data {
      * 设备唯一标识
      */
     @CharArray(len = 14, groups = VersionGroup.V2005.class)
-    @CharArray(len = 24, groups = VersionGroup.V2017.class)
+    @CharArray(len = 24, groups = {VersionGroup.V2017.class, VersionGroup.V2025.class})
     @JsonProperty("MN")
     private String mn;
 

@@ -93,6 +93,13 @@ public class ProtocolMapper {
      */
     private static final int SEGMENT_FEATURE_BIT_OFFSET = 8;
 
+    /** 推荐的 2025 校验组合；不修改旧版默认开关。 */
+    public synchronized ProtocolMapper enableStrict2025() {
+        return enableDefaultParserFeatures().enableDefaultVerifyFeatures()
+            .enable(VerifyFeature.STRICT_2025).enable(VerifyFeature.DATA_CRC)
+            .enable(ParserFeature.HEADER_CONSTANT).enable(ParserFeature.FOOTER_CONSTANT);
+    }
+
     public ProtocolMapper enableDefaultParserFeatures() {
         parserFeatures = Feature.collectFeatureDefaults(SegmentParserFeature.class);
         parserFeatures = parserFeatures << SEGMENT_FEATURE_BIT_OFFSET;
@@ -163,22 +170,22 @@ public class ProtocolMapper {
     /* main methods
     /**********************************************************
      */
-    public <T> T readValue(InputStream is, Class<T> value) throws IOException, ProtocolFormatException {
+    public synchronized <T> T readValue(InputStream is, Class<T> value) throws IOException, ProtocolFormatException {
         applyConfigurator();
         return _readValueAndClose(factory.parser(is),value);
     }
 
-    public <T> T readValue(byte[] bytes, Class<T> value) throws IOException, ProtocolFormatException {
+    public synchronized <T> T readValue(byte[] bytes, Class<T> value) throws IOException, ProtocolFormatException {
         applyConfigurator();
         return _readValueAndClose(factory.parser(bytes),value);
     }
 
-    public <T> T readValue(Reader reader, Class<T> value) throws IOException, ProtocolFormatException {
+    public synchronized <T> T readValue(Reader reader, Class<T> value) throws IOException, ProtocolFormatException {
         applyConfigurator();
         return _readValueAndClose(factory.parser(reader),value);
     }
 
-    public <T> T readValue(String data, Class<T> value) throws IOException, ProtocolFormatException {
+    public synchronized <T> T readValue(String data, Class<T> value) throws IOException, ProtocolFormatException {
         applyConfigurator();
         return _readValueAndClose(factory.parser(data),value);
     }
@@ -201,12 +208,12 @@ public class ProtocolMapper {
         }
     }
 
-    public <T> void writeValueAsStream(T value, Class<T> type, OutputStream outputStream) throws IOException, ProtocolFormatException {
+    public synchronized <T> void writeValueAsStream(T value, Class<T> type, OutputStream outputStream) throws IOException, ProtocolFormatException {
         applyConfigurator();
         _writeValueAndClose(factory.generator(outputStream),value,type);
     }
 
-    public <T> void writeValueAsWriter(T value, Class<T> type, Writer writer) throws IOException, ProtocolFormatException {
+    public synchronized <T> void writeValueAsWriter(T value, Class<T> type, Writer writer) throws IOException, ProtocolFormatException {
         applyConfigurator();
         _writeValueAndClose(factory.generator(writer),value,type);
     }
@@ -350,50 +357,50 @@ public class ProtocolMapper {
         }.getClass().getGenericInterfaces()[0];
     }
 
-	public Map<String,String> readMap(InputStream is) throws IOException, ProtocolFormatException {
+	public synchronized Map<String,String> readMap(InputStream is) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(is),getMapGenericType().get(),Map.class);
     }
 
-    public Map<String,String> readMap(byte[] bytes) throws IOException, ProtocolFormatException {
+    public synchronized Map<String,String> readMap(byte[] bytes) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(bytes),getMapGenericType().get(),Map.class);
     }
 
-    public Map<String,String> readMap(Reader reader) throws IOException, ProtocolFormatException {
+    public synchronized Map<String,String> readMap(Reader reader) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(reader),getMapGenericType().get(),Map.class);
     }
 
-    public Map<String,String> readMap(String data) throws IOException, ProtocolFormatException {
+    public synchronized Map<String,String> readMap(String data) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(data),getMapGenericType().get(),Map.class);
     }
 
 
-    public Map<String,Object> readDeepMap(InputStream is) throws IOException, ProtocolFormatException {
+    public synchronized Map<String,Object> readDeepMap(InputStream is) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(is),getDeepMapGenericType().get(),Map.class);
     }
 
-    public Map<String,Object> readDeepMap(byte[] bytes) throws IOException, ProtocolFormatException {
+    public synchronized Map<String,Object> readDeepMap(byte[] bytes) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(bytes),getDeepMapGenericType().get(),Map.class);
     }
 
-    public Map<String,Object> readDeepMap(Reader reader) throws IOException, ProtocolFormatException {
+    public synchronized Map<String,Object> readDeepMap(Reader reader) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(reader),getDeepMapGenericType().get(),Map.class);
     }
 
-    public Map<String,Object> readDeepMap(String data) throws IOException, ProtocolFormatException {
+    public synchronized Map<String,Object> readDeepMap(String data) throws IOException, ProtocolFormatException {
         applyConfigurator();
         //noinspection unchecked
         return _readValueAndClose(factory.parser(data),getDeepMapGenericType().get(),Map.class);
@@ -431,6 +438,44 @@ public class ProtocolMapper {
         StringWriter sw = new StringWriter();
         writeValueAsWriter(data,Data.class,sw);
         return sw.toString();
+    }
+
+    public byte[] writeDataAsBytes(Data data) throws IOException, ProtocolFormatException {
+        return writeDataAsString(data).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    public byte[] writeMapAsBytes(Map data) throws IOException, ProtocolFormatException {
+        return writeMapAsString(data).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    /** 从流中只读取一帧；正常流结束返回 null，不关闭调用方的流。 */
+    public Data readEncryptedData(InputStream input, byte[] key) throws IOException, ProtocolFormatException {
+        byte[] packet = ProtocolFrame.read(input);
+        return packet == null ? null : readEncryptedData(packet, key);
+    }
+
+    public Map<String,Object> readEncryptedDeepMap(InputStream input, byte[] key) throws IOException, ProtocolFormatException {
+        byte[] packet = ProtocolFrame.read(input);
+        return packet == null ? null : readEncryptedDeepMap(packet, key);
+    }
+
+    /** 调用方显式提供密钥；密文必须通过 byte[] 传输，不能转换为 UTF-8 字符串。 */
+    public byte[] writeDataAsEncryptedBytes(Data data, byte[] key) throws IOException, ProtocolFormatException {
+        return com.github.guocay.hj212.core.crypto.ProtocolCrypto.encrypt(
+            writeDataAsString(data).getBytes(java.nio.charset.StandardCharsets.UTF_8), key);
+    }
+
+    public byte[] writeMapAsEncryptedBytes(Map data, byte[] key) throws IOException, ProtocolFormatException {
+        return com.github.guocay.hj212.core.crypto.ProtocolCrypto.encrypt(
+            writeMapAsString(data).getBytes(java.nio.charset.StandardCharsets.UTF_8), key);
+    }
+
+    public Data readEncryptedData(byte[] packet, byte[] key) throws IOException, ProtocolFormatException {
+        return readData(com.github.guocay.hj212.core.crypto.ProtocolCrypto.decrypt(packet, key));
+    }
+
+    public Map<String,Object> readEncryptedDeepMap(byte[] packet, byte[] key) throws IOException, ProtocolFormatException {
+        return readDeepMap(com.github.guocay.hj212.core.crypto.ProtocolCrypto.decrypt(packet, key));
     }
 
     public char[] writeDataAsCharArray(Data data) throws IOException, ProtocolFormatException {

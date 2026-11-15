@@ -37,11 +37,18 @@ public class Pollution {
     @JsonProperty("CompleteTime")
     private String completeTime;
 
+    /** 附录 C.27/C.28 中与监测参数关联的采样模式。 */
+    @jakarta.validation.constraints.Min(value = 0, groups = VersionGroup.V2025.class)
+    @Max(value = 4, groups = VersionGroup.V2025.class)
+    @JsonProperty("SampleType")
+    private Integer sampleType;
+
     /**
      * 污染物实时采样数据
      */
-    @JsonProperty("Rtd")
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private BigDecimal rtd;
+    private String rtdText;
 
     /**
      * 监测参数实时工况采样数据（HJ 212-2025 新增）
@@ -183,6 +190,7 @@ public class Pollution {
      * <p>1表示通过，0表示未通过</p>
      * @since 2025
      */
+    @jakarta.validation.constraints.Min(value = 0, groups = VersionGroup.V2025.class)
     @Max(value = 1, groups = VersionGroup.V2025.class)
     @JsonProperty("ResultType")
     private Integer resultType;
@@ -270,8 +278,28 @@ public class Pollution {
     public String getCompleteTime() { return completeTime; }
     public void setCompleteTime(String completeTime) { this.completeTime = completeTime; }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public BigDecimal getRtd() { return rtd; }
-    public void setRtd(BigDecimal rtd) { this.rtd = rtd; }
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public void setRtd(BigDecimal rtd) { this.rtd = rtd; this.rtdText = null; }
+
+    /** 数值调用兼容 getRtd；工况或用电事件的字符值使用本接口读取。 */
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getRtdText() { return rtdText != null ? rtdText : rtd == null ? null : rtd.toPlainString(); }
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public void setRtdText(String value) { setRtdValue(value); }
+    @JsonProperty("Rtd")
+    public String getRtdValue() { return getRtdText(); }
+    @JsonProperty("Rtd")
+    public void setRtdValue(String value) {
+        rtdText = value;
+        rtd = null;
+        if (value != null) try { rtd = new BigDecimal(value); }
+        catch (NumberFormatException ignored) { /* 字符型监测参数，不强制转为数值。 */ }
+    }
+
+    public Integer getSampleType() { return sampleType; }
+    public void setSampleType(Integer sampleType) { this.sampleType = sampleType; }
 
     public BigDecimal getWcRtd() { return wcRtd; }
     public void setWcRtd(BigDecimal wcRtd) { this.wcRtd = wcRtd; }

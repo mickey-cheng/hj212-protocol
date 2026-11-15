@@ -28,6 +28,7 @@ public class MapValueSegmentDeserializer implements SegmentDeserializer<Object> 
                 return null;
             case END_KEY:
                 result = parser.readValue();
+                if (result == null) result = "";
                 break;
             case START_OBJECT_VALUE:
                 result = _valueDeserializer.deserialize(parser);

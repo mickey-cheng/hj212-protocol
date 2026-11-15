@@ -21,9 +21,11 @@ public class ProtocolCpMapPathValueSegmentSerializer
     @SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
     public void serialize(SegmentGenerator generator, Object data) throws IOException, SegmentFormatException {
-        if(data instanceof String){
+        if (data instanceof com.github.guocay.hj212.core.ProtocolMaps.RawCp) {
+            generator.writeObjectValue(((com.github.guocay.hj212.core.ProtocolMaps.RawCp)data).value());
+        } else if(data == null || data instanceof CharSequence || data instanceof Number || data instanceof Boolean){
             //NOT CP map but also support
-            String value = (String) data;
+            String value = data == null ? null : data.toString();
             generator.writeValue(value);
         }else if(data instanceof Map){
             //maybe T212Map
@@ -31,9 +33,9 @@ public class ProtocolCpMapPathValueSegmentSerializer
             SegmentGenerator g = generator.writeObjectStart();
 
             for (Map.Entry<String, Object> kv : map.entrySet()) {
-                if(kv.getValue() instanceof String){
+                if(kv.getValue() != null && !(kv.getValue() instanceof Map)){
                     g.writeKey(kv.getKey());
-                    g.writeValue((String) kv.getValue());
+                    g.writeValue(kv.getValue().toString());
                 }else if(kv.getValue() instanceof Map){
                     //is a part entity
                     Map<String,Object> partValue = (Map<String, Object>) kv.getValue();

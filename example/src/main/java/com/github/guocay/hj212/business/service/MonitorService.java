@@ -33,7 +33,8 @@ public class MonitorService {
     private final MonitorFactorMapping factorMapper;
 
     private final ProtocolMapper t212Mapper = ProtocolMapper.getInstance()
-            .enableDefaultParserFeatures().enableDefaultVerifyFeatures();
+            .enableDefaultParserFeatures().enableDefaultVerifyFeatures()
+            .enable(com.github.guocay.hj212.core.feature.VerifyFeature.DATA_CRC);
 
     public MonitorService(MonitorFactorMapping factorMapper) {
         this.factorMapper = factorMapper;
@@ -43,7 +44,8 @@ public class MonitorService {
     public String monitor(String monitorData,String ipAddress) throws Exception{
         String response = null;
 		Data data = t212Mapper.readData(monitorData);
-		data.getCp().getPollution().forEach((key, value) -> {
+		if (data.getCp() != null && data.getCp().getPollution() != null) data.getCp().getPollution().forEach((key, value) -> {
+            if (value.getRtd() == null) return;
 			MonitorFactorPo monitorFactorPo = new MonitorFactorPo();
 			monitorFactorPo.setDataStatus(Constant.EFFECTIVE).setMncode(data.getMn());
 			monitorFactorPo.setDataTime(data.getCp().getDataTime()).setFactor(key);
@@ -53,9 +55,11 @@ public class MonitorService {
 		});
 		if (DataFlag.A.isMarked(data.getDataFlag())) {
 			Data builder = new Data();
-			builder.setQn(data.getQn()).setSt(data.getSt()).setCn(Constant.DATA_RESPONSE);
+			builder.setQn(data.getQn()).setSt("91").setCn(Constant.DATA_RESPONSE);
 			builder.setPw(data.getPw()).setMn(data.getMn()).setCp(new CpData());
-			builder.setDataFlag(Collections.singletonList(DataFlag.V0));
+			builder.setDataFlag(data.getDataFlag() == null ? Collections.emptyList() :
+                data.getDataFlag().stream().filter(f -> f != DataFlag.A && f != DataFlag.D)
+                    .collect(java.util.stream.Collectors.toList()));
 			response = t212Mapper.writeDataAsString(builder);
 		}
         return response;

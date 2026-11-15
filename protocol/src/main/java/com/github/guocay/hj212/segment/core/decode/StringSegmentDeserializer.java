@@ -26,10 +26,12 @@ public class StringSegmentDeserializer implements SegmentDeserializer<String> {
                 break;
             case END_KEY:
                 result = parser.readValue();
+                if (result == null) result = "";
                 break;
             case START_OBJECT_VALUE:
                 //遇到Object Value读Value
                 result = parser.readObjectValue();
+                if (result == null) result = "";
                 break;
         }
 

@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableCaching
 @EnableScheduling
-@MapperScan("com.github.guocay.hj212.server.portal")
+@MapperScan({"com.github.guocay.hj212.business.mapper", "com.github.guocay.hj212.business.trans.mapper"})
 @SpringBootApplication
 public class MonitorCenterApplication implements CommandLineRunner {
 

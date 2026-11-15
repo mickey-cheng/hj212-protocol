@@ -106,8 +106,7 @@ public class DataReverseConverter
         Map map = objectMapper
                 .convertValue(cp,Map.class);
 
-        if(cp.getDataFlag() != null &&
-                !cp.getDataFlag().isEmpty()){
+        if(cp.getDataFlag() != null){
             String flag = convertDataFlag(cp.getDataFlag());
             map.put(Data.FLAG,flag);
         }
@@ -147,7 +146,7 @@ public class DataReverseConverter
             return "";
         }
         for (DataFlag dataFlag : flag) {
-            i += dataFlag.getBit();
+            i |= dataFlag.getBit();
         }
         return Integer.toString(i);
     }
@@ -160,8 +159,7 @@ public class DataReverseConverter
     private ProtocolMap<String,Object> convertDataLevel(Data data){
         Map map = objectMapper
                 .convertValue(data,Map.class);
-        if(data.getDataFlag() != null &&
-                !data.getDataFlag().isEmpty()){
+        if(data.getDataFlag() != null){
             String flag = convertDataFlag(data.getDataFlag());
             map.put(Data.FLAG,flag);
         }

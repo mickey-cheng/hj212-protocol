@@ -48,6 +48,8 @@ public class PackLevelDeserializer
             VerifyUtil.verifyCrc(pack.getSegment(), pack.getCrc(), PacketElement.DATA_CRC);
         }
         pack.setFooter(parser.readFooter());
+        if (com.github.guocay.hj212.core.feature.VerifyFeature.STRICT_2025.enabledIn(verifyFeature))
+            com.github.guocay.hj212.core.validator.Protocol2025Validator.validate(pack.getSegment());
 
         return pack;
     }

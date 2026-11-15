@@ -33,6 +33,8 @@ public class PackLevelSerializer
     public void serialize(ProtocolGenerator generator, Pack pack) throws IOException, ProtocolFormatException {
         generator.configured(generatorConfigurator);
 
+        if (com.github.guocay.hj212.core.feature.VerifyFeature.STRICT_2025.enabledIn(verifyFeature))
+            com.github.guocay.hj212.core.validator.Protocol2025Validator.validate(pack.getSegment());
         generator.writeHeader();
 
         if(DATA_LEN_RANGE.enabledIn(verifyFeature)){
@@ -44,7 +46,7 @@ public class PackLevelSerializer
                 segmentLen = pack.getSegment().length;
             }
 
-            VerifyUtil.verifyRange(segmentLen,0,1024, PacketElement.DATA_LEN);
+            VerifyUtil.verifyRange(new String(pack.getSegment()).getBytes(java.nio.charset.StandardCharsets.UTF_8).length,0,1024, PacketElement.DATA_LEN);
         }
 
         generator.writeDataAndLenAndCrc(pack.getSegment());

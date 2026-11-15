@@ -72,7 +72,7 @@ public class CpDataLevelMapDeserializer
 
         if(DATA_CRC.enabledIn(verifyFeature)){
             if(crc == -1 ||
-                    crc16Checkout(data,len) != crc){
+                    crc16Checkout(data,data.length) != crc){
                 ProtocolFormatException.crc_verification_failed(PacketElement.DATA,data,crc);
             }
         }
@@ -82,6 +82,8 @@ public class CpDataLevelMapDeserializer
     }
 
     public Map<String, Object> deserialize(char[] data) throws IOException, ProtocolFormatException {
+        if (com.github.guocay.hj212.core.feature.VerifyFeature.STRICT_2025.enabledIn(verifyFeature))
+            com.github.guocay.hj212.core.validator.Protocol2025Validator.validate(data);
         PushbackReader reader = new PushbackReader(new CharArrayReader(data));
         SegmentParser parser = new SegmentParser(reader);
         parser.configured(segmentParserConfigurator);
@@ -111,11 +113,7 @@ public class CpDataLevelMapDeserializer
             String f = (String) result.get(DataElement.Flag.name());
             flag = Integer.valueOf(f);
         }
-        if(!DataFlag.V0.isMarked(flag)){
-            groups.add(VersionGroup.V2017.class);
-        }else{
-            groups.add(VersionGroup.V2005.class);
-        }
+        groups.add(DataFlag.versionGroup(flag));
         if(DataFlag.D.isMarked(flag)){
             groups.add(ModeGroup.UseSubPacket.class);
         }

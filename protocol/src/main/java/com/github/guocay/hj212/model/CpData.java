@@ -41,6 +41,9 @@ public class CpData {
     @Max(value = 9999, groups = VersionGroup.V2005.class)
     @Min(value = 30, groups = VersionGroup.V2017.class)
     @Max(value = 3600, groups = VersionGroup.V2017.class)
+    @Min(value = 1, groups = VersionGroup.V2025.class)
+    @jakarta.validation.constraints.Min(value = 0, groups = VersionGroup.V2025.class)
+    @Max(value = 3600, groups = VersionGroup.V2025.class)
     @JsonProperty("RtdInterval")
     private Integer rtdInterval;
 
@@ -131,6 +134,7 @@ public class CpData {
      * <p>0：零点校准与调整；1：量程校准与调整</p>
      * @since 2025
      */
+    @jakarta.validation.constraints.Min(value = 0, groups = VersionGroup.V2025.class)
     @Max(value = 1, groups = VersionGroup.V2025.class)
     @JsonProperty("CalibrationType")
     private Integer calibrationType;
@@ -140,6 +144,7 @@ public class CpData {
      * <p>0：采集瞬时水样；1：时间等比例；2：流量等比例；3：流量触发；4：远程控制</p>
      * @since 2025
      */
+    @jakarta.validation.constraints.Min(value = 0, groups = VersionGroup.V2025.class)
     @Max(value = 4, groups = VersionGroup.V2025.class)
     @JsonProperty("SampleType")
     private Integer sampleType;
@@ -185,14 +190,25 @@ public class CpData {
     @JsonProperty("Flag")
     private List<DataFlag> dataFlag;
 
+    @jakarta.validation.Valid
     @JsonProperty("Pollution")
     private Map<String,Pollution> pollution;
 
+    @jakarta.validation.Valid
     @JsonProperty("Device")
     private Map<String,Device> device;
 
+    @jakarta.validation.Valid
     @JsonProperty("LiveSide")
     private Map<String,LiveSide> liveSide;
+
+    private Map<String, String> extensions = new java.util.LinkedHashMap<>();
+
+    /** 保留可扩充的普通 CP 字段，避免模型往返时丢失厂商或后续标准字段。 */
+    @com.fasterxml.jackson.annotation.JsonAnyGetter
+    public Map<String, String> getExtensions() { return extensions; }
+    @com.fasterxml.jackson.annotation.JsonAnySetter
+    public void setExtension(String key, String value) { extensions.put(key, value); }
 
     public String getSystemTime() {
         return systemTime;

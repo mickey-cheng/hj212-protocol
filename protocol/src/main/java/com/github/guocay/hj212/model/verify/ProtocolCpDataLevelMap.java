@@ -26,8 +26,10 @@ import java.util.Map;
         value = @CharArray(len = 4))
 @FieldC(field = "PW",
         value = @CharArray(len = 6))
-@FieldC(field = "MN",
+@FieldC(field = "MN", groups = VersionGroup.V2005.class,
         value = @CharArray(len = 14))
+@FieldC(field = "MN", groups = {VersionGroup.V2017.class, VersionGroup.V2025.class},
+        value = @CharArray(len = 24))
 @FieldN(field = "Flag",
         value = @NumberArray(integer = 3))
 @FieldN(field = "PNUM", groups = ModeGroup.UseSubPacket.class,
@@ -78,7 +80,7 @@ public class ProtocolCpDataLevelMap
 
 
     //污染物
-    @FieldC(field = ".*-Flag", regex = true,
+    @FieldC(field = ".*-Flag", regex = true, groups = {VersionGroup.V2005.class, VersionGroup.V2017.class},
             value = @CharArray(len = 1))
     @FieldC(field = ".*-Flag", regex = true, groups = VersionGroup.V2025.class,
             value = @CharArray(len = 3))
@@ -86,14 +88,22 @@ public class ProtocolCpDataLevelMap
     //HJ 212-2025 新增污染物子字段验证
     @FieldValidDate(field = ".*-CompleteTime", regex = true, groups = VersionGroup.V2025.class,
             value = @Date(format = "yyyyMMddHHmmss"))
-    @FieldN(field = ".*-WcRtd", regex = true, groups = VersionGroup.V2025.class)
-    @FieldN(field = ".*-RawRtd", regex = true, groups = VersionGroup.V2025.class)
-    @FieldN(field = ".*-WcMin", regex = true, groups = VersionGroup.V2025.class)
-    @FieldN(field = ".*-WcAvg", regex = true, groups = VersionGroup.V2025.class)
-    @FieldN(field = ".*-WcMax", regex = true, groups = VersionGroup.V2025.class)
-    @FieldN(field = ".*-RawMin", regex = true, groups = VersionGroup.V2025.class)
-    @FieldN(field = ".*-RawAvg", regex = true, groups = VersionGroup.V2025.class)
-    @FieldN(field = ".*-RawMax", regex = true, groups = VersionGroup.V2025.class)
+    @FieldN(field = ".*-WcRtd", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
+    @FieldN(field = ".*-RawRtd", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
+    @FieldN(field = ".*-WcMin", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
+    @FieldN(field = ".*-WcAvg", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
+    @FieldN(field = ".*-WcMax", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
+    @FieldN(field = ".*-RawMin", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
+    @FieldN(field = ".*-RawAvg", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
+    @FieldN(field = ".*-RawMax", regex = true, groups = VersionGroup.V2025.class,
+            value = @NumberArray(integer = Integer.MAX_VALUE, fraction = Integer.MAX_VALUE))
     @FieldN(field = ".*-StandardValue", regex = true, groups = VersionGroup.V2025.class,
             value = @NumberArray(integer = 6, fraction = 2))
     @FieldN(field = ".*-SampleRd", regex = true, groups = VersionGroup.V2025.class,

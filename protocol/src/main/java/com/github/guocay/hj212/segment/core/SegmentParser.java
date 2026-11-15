@@ -11,9 +11,7 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.nio.CharBuffer;
-import java.util.Optional;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.guocay.hj212.segment.core.SegmentToken.END_ENTRY;
 import static com.github.guocay.hj212.segment.core.SegmentToken.END_KEY;
@@ -39,6 +37,7 @@ public class SegmentParser implements Closeable, Configured<SegmentParser> {
     private int parserFeature;
     private SegmentToken currentToken;
     private Stack<String> path;
+    private String lastKey;
 
     public SegmentParser(Reader reader){
         this.reader = new PushbackReader(reader,3);
@@ -89,7 +88,7 @@ public class SegmentParser implements Closeable, Configured<SegmentParser> {
         }
 
         //一次性读取多少位,必须包括字符串中的键值对
-        CharBuffer buffer = CharBuffer.allocate(10+2);
+        CharBuffer buffer = CharBuffer.allocate(1024);
 
         //之后的Token
         int len = ReaderStream.of(reader)
@@ -172,6 +171,7 @@ public class SegmentParser implements Closeable, Configured<SegmentParser> {
         if(currentToken == START_OBJECT_VALUE){
             path.push(result);
         }
+        lastKey = result;
         return result;
     }
 
@@ -201,98 +201,65 @@ public class SegmentParser implements Closeable, Configured<SegmentParser> {
      * @throws IOException
      */
     private String readValue(boolean onlyObject) throws IOException {
-        //开启常规方式闭合Value
-        boolean basic = !onlyObject;
-        //当前Token
-        switch (currentToken){
-            case END_ENTRY:
-            case END_SUB_ENTRY:
-            case END_PART_KEY:
-            case END_OBJECT_VALUE:
-                throw new IOException("Cant read value after " + currentToken.name() + " token!");
+        switch (currentToken) {
+            case END_ENTRY: case END_SUB_ENTRY: case END_PART_KEY: case END_OBJECT_VALUE:
+                throw new IOException("当前状态不能读取值: " + currentToken);
             case START_OBJECT_VALUE:
-                if(onlyObject){
-                    //当前的值不是Object
-                    basic = false;
-                }else{
-                    throw new IOException("Cant read base value after " + currentToken.name() + " token!");
-                }
+                if (!onlyObject) throw new IOException("对象值必须使用 readObjectValue");
                 break;
+            default: break;
         }
-
-        AtomicReference<Integer> deep = new AtomicReference<>(0);
-        // @formatter:off
-        CharBuffer buffer = CharBuffer.allocate(basic ? 50 : 1024);
-        boolean finalBasic = basic;
-        int len = ReaderStream.of(reader)
-                .next()
-                    .when(NOT_AVAILABLE::isSame)
-                    .then(() -> currentToken = NULL_VALUE)
-                    //常规方式闭合
-                    .when(c -> finalBasic && END_SUB_ENTRY.isSame(c))
-                    .then(() -> currentToken = END_SUB_ENTRY)//break
-                    .when(c -> finalBasic && END_ENTRY.isSame(c))
-                    .then(() -> currentToken = END_ENTRY)//break
-
-                    //标记
-                    .when(END_KEY::isSame)
-                    .then()
-                        .next(2)
-                            .when(START_OBJECT_VALUE::isSame)
-                            .then(() -> {
-                                //忽略4个‘&’
-                                deep.getAndSet(deep.get() + 4);
-                            })
-                            .back()//回滚
-                        .back()
-
-
-                    //value&&
-                    //也许是内部object START_OBJECT_VALUE
-                    //也许是闭合内部object END_OBJECT_VALUE
-                    //也许是闭合 END_OBJECT_VALUE
-                    .when(c -> START_OBJECT_VALUE.isStart(c))
-                    .then()
-                        .next()
-                            .when(START_OBJECT_VALUE::isStart)
-                            .then(() -> {
-                                if(deep.get() == 0){
-                                    currentToken = END_OBJECT_VALUE;
-                                    return Optional.of(true);
-                                }else{
-                                    return Optional.empty();
-                                }
-                            })
-                            .done()
-                        .back()
-                    .then(() -> {
-                        if(deep.get() != 0){
-                            //被忽略
-                            deep.getAndSet(deep.get() - 1);
-                            return Optional.empty();
-                        }
-
-                        if(!IGNORE_INVAILD_SYMBOL.enabledIn(parserFeature)){
-
-                        }
-                        //Ignore Invaild symbol
-                        return Optional.empty();
-                    })
-                    .done()
-                .read(buffer);
-        // @formatter:on
-        if(currentToken == END_OBJECT_VALUE){
-            path.pop();
+        StringBuilder value = new StringBuilder();
+        boolean quotedLog = false;
+        int depth = 0;
+        while (true) {
+            int c = reader.read();
+            if (c < 0) {
+                if (quotedLog) throw new IOException("日志缺少闭合 //");
+                currentToken = NULL_VALUE;
+                break;
+            }
+            if (c == '/') {
+                int next = reader.read();
+                String key = lastKey;
+                if (onlyObject && value.length() > 0 && value.charAt(value.length()-1) == '=') {
+                    int start = Math.max(value.lastIndexOf(";"), value.lastIndexOf(",")) + 1;
+                    key = value.substring(start, value.length()-1);
+                }
+                boolean logStart = key != null && key.matches("([A-Za-z0-9]+-)?i[0-9a-z]1[0-9a-z]{3}(-Info)?")
+                    && ((!onlyObject && value.length() == 0) || (onlyObject && value.length() > 0 && value.charAt(value.length()-1) == '='));
+                if (next == '/' && (quotedLog || logStart)) {
+                    quotedLog = !quotedLog;
+                    value.append("//");
+                    continue;
+                }
+                if (next >= 0) reader.unread(next);
+            }
+            if (!quotedLog && c == '&') {
+                int next = reader.read();
+                if (next == '&') {
+                    if (depth > 0) { depth--; value.append("&&"); continue; }
+                    currentToken = END_OBJECT_VALUE;
+                    if (!path.empty()) path.pop();
+                    break;
+                }
+                if (next >= 0) reader.unread(next);
+            }
+            if (!quotedLog && onlyObject && c == '=') {
+                int first = reader.read(), second = first < 0 ? -1 : reader.read();
+                if (first == '&' && second == '&') {
+                    depth++; value.append("=&&"); continue;
+                }
+                if (second >= 0) reader.unread(second);
+                if (first >= 0) reader.unread(first);
+            }
+            if (!quotedLog && !onlyObject && (c == ';' || c == ',')) {
+                currentToken = c == ';' ? END_ENTRY : END_SUB_ENTRY;
+                break;
+            }
+            value.append((char)c);
         }
-
-        if(len == 0){
-            return null;
-        }
-
-        buffer.rewind();
-        //字符串去掉"\0"后缀
-        String result = buffer.toString().substring(0,len);
-        return result;
+        return value.length() == 0 ? null : value.toString();
     }
 
     /**

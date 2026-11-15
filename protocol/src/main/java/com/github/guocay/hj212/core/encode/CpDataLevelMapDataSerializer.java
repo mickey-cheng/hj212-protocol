@@ -38,12 +38,13 @@ public class CpDataLevelMapDataSerializer
 
     @Override
     public void serialize(ProtocolGenerator generator, Map<String,Object> data) throws IOException, ProtocolFormatException {
+        char[] segment = serialize(data);
+        if (com.github.guocay.hj212.core.feature.VerifyFeature.STRICT_2025.enabledIn(verifyFeature))
+            com.github.guocay.hj212.core.validator.Protocol2025Validator.validate(segment);
         generator.writeHeader();
 
-        char[] segment = serialize(data);
-
         if(DATA_LEN_RANGE.enabledIn(verifyFeature)){
-            int segmentLen = segment.length;
+            int segmentLen = new String(segment).getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
             VerifyUtil.verifyRange(segmentLen,0,1024, PacketElement.DATA_LEN);
         }
         generator.writeDataAndLenAndCrc(segment);
@@ -56,7 +57,7 @@ public class CpDataLevelMapDataSerializer
         generator.configured(segmentGeneratorConfigurator);
 
         try {
-            segmentSerializer.serialize(generator,data);
+            segmentSerializer.serialize(generator,com.github.guocay.hj212.core.ProtocolMaps.ordered(data));
         } catch (SegmentFormatException e) {
             ProtocolFormatException.segment_exception(e);
         }
