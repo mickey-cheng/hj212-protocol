@@ -377,4 +377,4 @@ hj212-protocol
 
 ---
 
-> 参考：[污染物在线监控（监测）系统数据传输标准 (HJ 212-2017)](https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/other/qt/201706/t20170608_415697.shtml) ｜ [HJ 212-2025](https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/jcffbz/202507/t20250711_1123257.shtml/)
+> 参考：[污染物在线监控（监测）系统数据传输标准 (HJ 212-2017)](https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/other/qt/201706/t20170608_415697.shtml) ｜ [HJ 212-2025](https://www.mee.gov.cn/ywgz/fgbz/bz/bzwb/jcffbz/202507/t20250711_1123257.shtml)
